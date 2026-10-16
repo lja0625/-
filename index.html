@@ -1,525 +1,688 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>夢幻手速大決鬥 - 10秒人機對對碰</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome 圖示 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Quicksand & Outfit -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>夢幻連點 & 火柴人拳擊擂台</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Outfit & Noto Sans TC -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
     
-    <style>
-        body {
-            font-family: 'Quicksand', 'Outfit', sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            background: linear-gradient(135deg, #1e1b4b 0%, #311042 40%, #2e1065 70%, #1e1b4b 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+    /* 夢幻漸層背景動畫 */
+    .dreamy-bg {
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #a855f7, #ec4899);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
 
-        /* 背景飄浮星光動畫 */
-        @keyframes starFloat {
-            0% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-            50% { transform: translateY(-15px) rotate(180deg); opacity: 0.8; }
-            100% { transform: translateY(0px) rotate(360deg); opacity: 0.3; }
-        }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-        .star-bg {
-            position: absolute;
-            pointer-events: none;
-            animation: starFloat 6s ease-in-out infinite;
-        }
+    /* 毛玻璃效果 */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+    }
 
-        /* 點擊按鈕心跳脈衝 */
-        @keyframes pulseDream {
-            0% { transform: scale(1); box-shadow: 0 0 35px rgba(244, 114, 182, 0.6), 0 0 15px rgba(192, 132, 252, 0.4); }
-            50% { transform: scale(0.93); box-shadow: 0 0 50px rgba(244, 114, 182, 0.9), 0 0 25px rgba(192, 132, 252, 0.8); }
-            100% { transform: scale(1); box-shadow: 0 0 35px rgba(244, 114, 182, 0.6), 0 0 15px rgba(192, 132, 252, 0.4); }
-        }
+    /* 浮動動態粒子/愛心 */
+    .particle {
+      position: absolute;
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+      font-weight: bold;
+    }
 
-        .dream-clicking {
-            animation: pulseDream 0.12s ease-out;
-        }
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+      }
+      50% {
+        transform: translate(-50%, -100%) scale(1.3) rotate(15deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -160%) scale(1) rotate(-15deg);
+      }
+    }
 
-        /* 夢幻浮動粒子動畫 */
-        @keyframes floatParticle {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
-            }
-            50% {
-                opacity: 0.9;
-                transform: translate(calc(-50% + var(--dx)), calc(-50% - 80px)) scale(1.4) rotate(var(--rot));
-            }
-            100% {
-                opacity: 0;
-                transform: translate(calc(-50% + var(--dx)*1.5), calc(-50% - 150px)) scale(0.8) rotate(calc(var(--rot)*2));
-            }
-        }
+    /* 按鈕點擊按壓特效 */
+    .click-btn {
+      transition: all 0.05s ease;
+    }
+    .click-btn:active {
+      transform: scale(0.94) !important;
+    }
 
-        .dream-particle {
-            position: fixed;
-            pointer-events: none;
-            font-size: 1.5rem;
-            animation: floatParticle 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-            z-index: 100;
-            filter: drop-shadow(0 0 8px rgba(244, 114, 182, 0.8));
-        }
+    /* 拳擊文字打擊特效 */
+    .hit-text {
+      position: absolute;
+      font-weight: 900;
+      font-size: 2rem;
+      pointer-events: none;
+      animation: popText 0.5s ease-out forwards;
+    }
 
-        /* 毛玻璃與發光樣式 */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        .glass-modal {
-            background: rgba(30, 20, 50, 0.85);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(244, 114, 182, 0.3);
-        }
-
-        /* 夢幻漸層進度條 glow */
-        .glow-pink {
-            box-shadow: 0 0 20px rgba(244, 114, 182, 0.6);
-        }
-        .glow-cyan {
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
-        }
-    </style>
+    @keyframes popText {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+      50% { transform: translate(-50%, -80%) scale(1.4); }
+      100% { opacity: 0; transform: translate(-50%, -120%) scale(1); }
+    }
+  </style>
 </head>
-<body class="text-pink-100 flex flex-col items-center justify-between p-4 relative select-none">
+<body class="dreamy-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden text-slate-800">
 
-    <!-- 背景星光背景裝飾 -->
-    <div id="starContainer" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+  <!-- ================= 遊戲 1：夢幻連點大賽 ================= -->
+  <div id="game1-container" class="w-full max-w-xl glass-card rounded-3xl p-6 md:p-8 text-center relative z-10 transition-all duration-500">
+    <!-- 標頭資訊 -->
+    <div class="mb-4">
+      <span class="inline-block bg-white/40 text-purple-900 font-extrabold px-4 py-1.5 rounded-full text-sm shadow-sm backdrop-blur-sm">
+        ✨ 夢幻手速對決
+      </span>
+      <h1 class="text-3xl md:text-4xl font-black text-white drop-shadow-md mt-2 tracking-wide">
+        人機連點大賽
+      </h1>
+    </div>
 
-    <!-- 頂部標題區 -->
-    <header class="w-full max-w-lg text-center pt-4 z-10">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-400/30 text-pink-300 text-xs font-bold mb-2 shadow-sm backdrop-blur">
-            <i class="fa-solid fa-sparkles text-yellow-300 animate-pulse"></i> Dreamy Pastel Duel
+    <!-- 計時器與 CPS 狀態 -->
+    <div class="grid grid-cols-3 gap-3 mb-6">
+      <div class="bg-white/30 rounded-2xl p-3 backdrop-blur-sm border border-white/40">
+        <p class="text-xs text-white/80 font-bold uppercase tracking-wider">剩餘時間</p>
+        <p id="timer" class="text-2xl md:text-3xl font-black text-amber-300 drop-shadow">10.0s</p>
+      </div>
+      <div class="bg-white/30 rounded-2xl p-3 backdrop-blur-sm border border-white/40">
+        <p class="text-xs text-white/80 font-bold uppercase tracking-wider">您的點擊 (CPS)</p>
+        <p id="player-cps" class="text-2xl md:text-3xl font-black text-pink-200 drop-shadow">0.0</p>
+      </div>
+      <div class="bg-white/30 rounded-2xl p-3 backdrop-blur-sm border border-white/40">
+        <p class="text-xs text-white/80 font-bold uppercase tracking-wider">AI 點擊 (CPS)</p>
+        <p id="ai-cps" class="text-2xl md:text-3xl font-black text-cyan-200 drop-shadow">0.0</p>
+      </div>
+    </div>
+
+    <!-- 進度條 PK -->
+    <div class="space-y-4 mb-6">
+      <!-- 玩家進度條 -->
+      <div>
+        <div class="flex justify-between text-sm font-bold text-white mb-1 px-1">
+          <span class="flex items-center gap-1">👑 玩家 (您)</span>
+          <span id="player-score" class="text-lg text-pink-200">0 次</span>
         </div>
-        <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent drop-shadow">
-            ✨ 夢幻 10 秒連點對決
-        </h1>
-        <p class="text-xs md:text-sm text-purple-200/80 mt-1">對手 AI 平均速度 ~5 CPS (每秒5下)，準備好綻放你的粉紅手速了嗎？</p>
-    </header>
-
-    <!-- 主要遊戲內容區 -->
-    <main class="w-full max-w-lg my-auto flex flex-col items-center gap-5 z-10">
-        
-        <!-- 計時器與領先差距 -->
-        <div class="glass-panel rounded-3xl p-4 flex items-center justify-between w-full shadow-2xl">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500/20 to-purple-500/20 border border-pink-300/30 flex items-center justify-center text-pink-300 text-2xl shadow-inner">
-                    <i class="fa-regular fa-hourglass-half"></i>
-                </div>
-                <div>
-                    <div class="text-xs text-purple-200/70 uppercase tracking-widest font-bold">剩餘時間</div>
-                    <div id="timerDisplay" class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-purple-200">10.0s</div>
-                </div>
-            </div>
-            
-            <div class="text-right">
-                <div class="text-xs text-purple-200/70 uppercase tracking-widest font-bold">領先差距</div>
-                <div id="diffDisplay" class="text-xl md:text-2xl font-black text-pink-300">0 下</div>
-            </div>
+        <div class="w-full bg-black/20 h-5 rounded-full overflow-hidden p-1 backdrop-blur-sm">
+          <div id="player-bar" class="bg-gradient-to-r from-pink-400 to-rose-400 h-full rounded-full transition-all duration-100 shadow-inner" style="width: 0%"></div>
         </div>
+      </div>
 
-        <!-- 對抗進度條卡片 -->
-        <div class="w-full glass-panel rounded-3xl p-5 shadow-2xl space-y-4 border border-pink-300/20">
-            
-            <!-- 玩家進度條 -->
-            <div>
-                <div class="flex justify-between items-center mb-1.5 text-sm">
-                    <span class="font-bold text-pink-300 flex items-center gap-2">
-                        <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i> 玩家 (You)
-                    </span>
-                    <div class="space-x-3 text-xs">
-                        <span class="text-purple-200/80">CPS: <span id="playerCps" class="text-pink-300 font-bold">0.0</span></span>
-                        <span class="text-xl font-black text-pink-300" id="playerScore">0</span>
-                    </div>
-                </div>
-                <div class="w-full bg-slate-900/40 h-4 rounded-full overflow-hidden p-0.5 border border-pink-300/30 backdrop-blur">
-                    <div id="playerBar" class="bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-300 h-full rounded-full transition-all duration-150 w-0 glow-pink"></div>
-                </div>
-            </div>
-
-            <!-- 電腦 AI 進度條 -->
-            <div>
-                <div class="flex justify-between items-center mb-1.5 text-sm">
-                    <span class="font-bold text-cyan-300 flex items-center gap-2">
-                        <i class="fa-solid fa-robot text-cyan-400"></i> 電腦 AI (~5 CPS)
-                    </span>
-                    <div class="space-x-3 text-xs">
-                        <span class="text-purple-200/80">CPS: <span id="aiCps" class="text-cyan-300 font-bold">0.0</span></span>
-                        <span class="text-xl font-black text-cyan-300" id="aiScore">0</span>
-                    </div>
-                </div>
-                <div class="w-full bg-slate-900/40 h-4 rounded-full overflow-hidden p-0.5 border border-cyan-300/30 backdrop-blur">
-                    <div id="aiBar" class="bg-gradient-to-r from-cyan-500 via-sky-400 to-indigo-400 h-full rounded-full transition-all duration-150 w-0 glow-cyan"></div>
-                </div>
-            </div>
-
+      <!-- AI 進度條 -->
+      <div>
+        <div class="flex justify-between text-sm font-bold text-white mb-1 px-1">
+          <span class="flex items-center gap-1">🤖 AI 電腦 (約 5 CPS)</span>
+          <span id="ai-score" class="text-lg text-cyan-200">0 次</span>
         </div>
-
-        <!-- 夢幻點擊核心按鈕 -->
-        <div class="relative flex items-center justify-center my-2 w-full">
-            <button id="clickBtn" disabled 
-                class="w-56 h-56 md:w-64 md:h-64 rounded-full bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-400 hover:from-pink-400 hover:to-indigo-300 text-white font-extrabold text-2xl md:text-3xl border-4 border-pink-200/40 flex flex-col items-center justify-center shadow-2xl transition-all duration-75 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed outline-none relative overflow-hidden group">
-                <!-- 按鈕內柔光微粒 -->
-                <div class="absolute inset-0 bg-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                
-                <i class="fa-solid fa-heart text-5xl md:text-6xl mb-2 text-pink-200 animate-bounce drop-shadow"></i>
-                <span id="btnText" class="tracking-wider">點擊開始比賽</span>
-                <span id="comboText" class="text-xs text-pink-200/90 mt-1 font-normal opacity-0 tracking-widest">✨ Tap Tap! ✨</span>
-            </button>
+        <div class="w-full bg-black/20 h-5 rounded-full overflow-hidden p-1 backdrop-blur-sm">
+          <div id="ai-bar" class="bg-gradient-to-r from-cyan-400 to-blue-400 h-full rounded-full transition-all duration-100 shadow-inner" style="width: 0%"></div>
         </div>
+      </div>
+    </div>
 
-        <!-- 開始按鈕 -->
-        <button id="startBtn" onclick="prepareStart()" 
-            class="px-10 py-4 bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 hover:from-pink-300 hover:to-cyan-300 text-slate-900 font-black text-lg rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 border border-white/40">
-            <i class="fa-solid fa-play"></i> 開始夢幻比賽
+    <!-- 點擊主要區域 -->
+    <div class="relative mb-4">
+      <button id="click-area" disabled class="click-btn w-full h-44 md:h-52 rounded-3xl bg-gradient-to-tr from-pink-400/80 via-purple-400/80 to-indigo-400/80 hover:from-pink-400 hover:to-indigo-400 text-white font-black text-2xl md:text-3xl shadow-xl flex flex-col items-center justify-center gap-2 border-2 border-white/50 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 transition cursor-pointer relative overflow-hidden">
+        <span id="click-btn-text" class="drop-shadow-lg">準備開局...</span>
+        <span id="combo-badge" class="hidden bg-yellow-300 text-purple-900 text-xs px-3 py-1 rounded-full font-black animate-bounce shadow">
+          COMBO x0 🔥
+        </span>
+      </button>
+    </div>
+
+    <!-- 開局按鈕 -->
+    <button id="start-btn" onclick="startClickGame()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-300 via-pink-400 to-rose-400 text-white font-extrabold text-xl shadow-lg hover:brightness-110 active:scale-98 transition">
+      🚀 開始 10 秒對決
+    </button>
+  </div>
+
+  <!-- 夢幻連點 - 結算彈窗 -->
+  <div id="click-modal" class="hidden fixed inset-0 bg-purple-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full rounded-3xl p-6 text-center text-white border border-white/50 shadow-2xl">
+      <!-- 醒目的「你很厲害嗎？」標題 -->
+      <div class="bg-amber-300/20 border-2 border-amber-300/60 rounded-2xl p-4 mb-4">
+        <h2 id="taunt-main" class="text-3xl md:text-4xl font-black text-yellow-300 drop-shadow-md tracking-wider animate-bounce">
+          你很厲害嗎？ 🔥
+        </h2>
+      </div>
+
+      <div id="result-emoji" class="text-5xl mb-1">🎉</div>
+      <h3 id="result-title" class="text-2xl font-bold mb-1">比賽結束！</h3>
+      
+      <div class="bg-white/20 rounded-2xl p-4 my-4 space-y-2 text-left backdrop-blur-sm text-sm">
+        <div class="flex justify-between">
+          <span class="text-white/80">您的點擊數：</span>
+          <span id="final-player" class="font-bold text-pink-200">0 次</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-white/80">AI 點擊數：</span>
+          <span id="final-ai" class="font-bold text-cyan-200">0 次</span>
+        </div>
+        <div class="flex justify-between border-t border-white/20 pt-2 text-base">
+          <span class="font-bold">連點差距：</span>
+          <span id="final-diff" class="font-black text-yellow-300">0 次</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <button onclick="startClickGame()" class="flex-1 py-3 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold transition">
+          🔄 再連點一次
         </button>
+        <button id="next-boxing-btn" onclick="switchToBoxing()" class="flex-1 py-3 bg-gradient-to-r from-rose-400 to-amber-300 text-purple-950 rounded-xl font-black shadow-lg hover:brightness-110 transition">
+          🥊 進入拳擊擂台
+        </button>
+      </div>
+    </div>
+  </div>
 
-    </main>
 
-    <!-- 頁尾 -->
-    <footer class="text-xs text-purple-300/60 py-2 z-10">
-        Dreamy Clicker Game &copy; 10-Second Pastel Battle
-    </footer>
-
-    <!-- 開局倒數 3 秒遮罩 -->
-    <div id="countdownModal" class="fixed inset-0 bg-indigo-950/80 backdrop-blur-md hidden z-50 flex flex-col items-center justify-center">
-        <div class="text-pink-200 text-xl font-bold mb-4 tracking-widest">✨ 準備開始浪漫對決 ✨</div>
-        <div id="countdownNum" class="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 animate-ping">
-            3
-        </div>
+  <!-- ================= 遊戲 2：火柴人拳擊擂台 ================= -->
+  <div id="game2-container" class="hidden w-full max-w-2xl glass-card rounded-3xl p-6 md:p-8 text-center relative z-10">
+    <div class="flex justify-between items-center mb-3">
+      <span class="bg-rose-500/80 text-white font-extrabold px-4 py-1 rounded-full text-xs shadow">
+        🥊 第二關：拳擊擂台
+      </span>
+      <p class="text-white/90 text-xs font-bold">點擊畫面或按 Space 空白鍵出拳！</p>
     </div>
 
-    <!-- 夢幻結算面板 (Modal) -->
-    <div id="resultModal" class="fixed inset-0 bg-indigo-950/75 backdrop-blur-lg hidden z-50 flex items-center justify-center p-4">
-        <div class="glass-modal rounded-3xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl relative overflow-hidden transform transition-all scale-95 border border-pink-300/40">
+    <!-- 拳擊看板 -->
+    <div class="flex justify-between items-center bg-black/30 rounded-2xl p-3 mb-4 backdrop-blur-sm border border-white/20">
+      <div class="text-left">
+        <p class="text-xs text-pink-300 font-bold">👑 玩家 (藍頭帶)</p>
+        <p id="box-p-score" class="text-2xl font-black text-white">0 拳</p>
+      </div>
+      <div class="text-center">
+        <p class="text-xs text-white/70 font-bold">倒數</p>
+        <p id="box-timer" class="text-3xl font-black text-amber-300">10.0s</p>
+      </div>
+      <div class="text-right">
+        <p class="text-xs text-cyan-300 font-bold">🤖 AI (6 CPS)</p>
+        <p id="box-ai-score" class="text-2xl font-black text-white">0 拳</p>
+      </div>
+    </div>
+
+    <!-- Canvas 拳擊擂台繪製 -->
+    <div class="relative w-full h-64 md:h-72 bg-gradient-to-b from-indigo-900/60 to-purple-950/80 rounded-2xl overflow-hidden border-2 border-white/30 shadow-inner cursor-pointer flex items-center justify-center" id="boxing-canvas-wrap">
+      <canvas id="boxingCanvas" class="w-full h-full absolute inset-0"></canvas>
+      
+      <!-- 倒數計時遮罩大字 -->
+      <div id="boxing-countdown-overlay" class="hidden absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-20">
+        <span id="boxing-countdown-text" class="text-7xl font-black text-amber-300 drop-shadow-2xl animate-ping">
+          3
+        </span>
+      </div>
+    </div>
+
+    <!-- 開始/重來按鈕 -->
+    <button id="box-start-btn" onclick="prepareBoxingGame()" class="w-full mt-4 py-3.5 rounded-2xl bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 text-purple-950 font-black text-xl shadow-lg hover:brightness-110 active:scale-98 transition">
+      🥊 開始拳擊對決
+    </button>
+  </div>
+
+  <!-- 拳擊 - KO 結算彈窗 -->
+  <div id="box-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full rounded-3xl p-8 text-center text-white border border-white/50 shadow-2xl">
+      <p id="box-ko-title" class="text-2xl font-black text-amber-300 tracking-wider mb-1">KO! 擂台結果</p>
+      <h2 id="box-banner" class="text-5xl font-black my-4 tracking-wider drop-shadow-lg">VICTORY</h2>
+      <p id="box-sub-text" class="text-lg font-bold text-white/90 mb-6">一拳將對方打倒在地！</p>
+      
+      <div class="flex gap-3">
+        <button onclick="backToClickGame()" class="flex-1 py-3 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold transition">
+          ✨ 重玩連點遊戲
+        </button>
+        <button onclick="prepareBoxingGame()" class="flex-1 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-xl font-black shadow-lg hover:brightness-110 transition">
+          🥊 再打一局拳擊
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= JavaScript 邏輯 ================= -->
+  <script>
+    /* ================= 遊戲 1：夢幻連點邏輯 ================= */
+    let clickDuration = 10;
+    let clickTimeLeft = clickDuration;
+    let playerClicks = 0;
+    let aiClicks = 0;
+    let clickTimer = null;
+    let isClicking = false;
+    let combo = 0;
+    let comboTimer = null;
+
+    const timerEl = document.getElementById('timer');
+    const playerCpsEl = document.getElementById('player-cps');
+    const aiCpsEl = document.getElementById('ai-cps');
+    const playerScoreEl = document.getElementById('player-score');
+    const aiScoreEl = document.getElementById('ai-score');
+    const playerBar = document.getElementById('player-bar');
+    const aiBar = document.getElementById('ai-bar');
+    const clickArea = document.getElementById('click-area');
+    const clickBtnText = document.getElementById('click-btn-text');
+    const comboBadge = document.getElementById('combo-badge');
+    const startBtn = document.getElementById('start-btn');
+    const clickModal = document.getElementById('click-modal');
+
+    function startClickGame() {
+      clickModal.classList.add('hidden');
+      playerClicks = 0;
+      aiClicks = 0;
+      clickTimeLeft = clickDuration;
+      combo = 0;
+      
+      updateClickUI();
+      startBtn.disabled = true;
+      startBtn.classList.add('opacity-50');
+      
+      let countdown = 3;
+      clickBtnText.innerText = `準備: ${countdown}`;
+      
+      const cdInterval = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+          clickBtnText.innerText = `準備: ${countdown}`;
+        } else {
+          clearInterval(cdInterval);
+          clickBtnText.innerText = '💖 猛烈連點我！ 💖';
+          clickArea.disabled = false;
+          isClicking = true;
+          
+          clickTimer = setInterval(() => {
+            clickTimeLeft -= 0.1;
             
-            <!-- 結算頂部徽章 -->
-            <div id="resultBadge" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-4 bg-pink-500/20 text-pink-300 border border-pink-300/40 shadow-lg">
-                <i class="fa-solid fa-crown"></i>
-            </div>
+            // AI 電腦模擬：每秒約 5 下 (每 0.1 秒 50% 機率加 1 下)
+            if (Math.random() < 0.50) {
+              aiClicks++;
+            }
 
-            <h2 id="resultTitle" class="text-3xl font-black text-white mb-1">比賽結束！</h2>
-            <p id="resultSubtitle" class="text-pink-200/80 text-sm mb-6">夢幻對決成果統計</p>
+            if (clickTimeLeft <= 0) {
+              clickTimeLeft = 0;
+              endClickGame();
+            }
+            updateClickUI();
+          }, 100);
+        }
+      }, 1000);
+    }
 
-            <!-- 詳細數據卡片 -->
-            <div class="bg-indigo-900/40 rounded-2xl p-4 border border-pink-300/20 space-y-3 mb-6 text-sm">
-                <div class="flex justify-between items-center border-b border-pink-300/10 pb-2">
-                    <span class="text-purple-200/80 flex items-center gap-2"><i class="fa-solid fa-user text-pink-400"></i>你的點擊數</span>
-                    <span id="resPlayerClicks" class="font-extrabold text-pink-300 text-lg">0 次</span>
-                </div>
-                <div class="flex justify-between items-center border-b border-pink-300/10 pb-2">
-                    <span class="text-purple-200/80 flex items-center gap-2"><i class="fa-solid fa-robot text-cyan-400"></i>AI 點擊數</span>
-                    <span id="resAiClicks" class="font-extrabold text-cyan-300 text-lg">0 次</span>
-                </div>
-                <div class="flex justify-between items-center border-b border-pink-300/10 pb-2">
-                    <span class="text-purple-200/80 flex items-center gap-2"><i class="fa-solid fa-bolt text-yellow-300"></i>你的平均 CPS</span>
-                    <span id="resPlayerAvgCps" class="font-bold text-purple-200">0.0 次/秒</span>
-                </div>
-                <div class="flex justify-between items-center pt-1">
-                    <span class="text-pink-100 font-bold">對決結果</span>
-                    <span id="resDiffText" class="font-black text-xl text-pink-300">贏了 0 次</span>
-                </div>
-            </div>
+    clickArea.addEventListener('pointerdown', (e) => {
+      if (!isClicking) return;
+      playerClicks++;
+      combo++;
+      
+      // Combo 動畫
+      clearTimeout(comboTimer);
+      comboBadge.classList.remove('hidden');
+      comboBadge.innerText = `COMBO x${combo} 🔥`;
+      comboTimer = setTimeout(() => { combo = 0; comboBadge.classList.add('hidden'); }, 600);
 
-            <!-- 重新挑戰按鈕 -->
-            <button onclick="closeResultAndRestart()" 
-                class="w-full py-4 bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 hover:from-pink-300 hover:to-cyan-300 text-slate-900 font-black text-lg rounded-2xl shadow-xl transition-all active:scale-95 border border-white/50">
-                <i class="fa-solid fa-rotate-right mr-2"></i>再挑戰一次
-            </button>
-        </div>
-    </div>
+      // 產生點擊夢幻粒子
+      createParticle(e.clientX, e.clientY);
+      updateClickUI();
+    });
 
-    <script>
-        // --- 遊戲狀態與參數 ---
-        const GAME_DURATION = 10; // 10秒限時
-        const AI_TARGET_CPS = 5.0; // AI 約 5 CPS
+    function createParticle(x, y) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const symbols = ['💖', '✨', '🌸', '⭐', '+1'];
+      p.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+      p.style.left = `${x}px`;
+      p.style.top = `${y}px`;
+      p.style.color = ['#f472b6', '#fbbf24', '#38bdf8', '#c084fc'][Math.floor(Math.random()*4)];
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 800);
+    }
 
-        let playerClicks = 0;
-        let aiClicks = 0;
-        let timeLeft = GAME_DURATION;
-        let isGameRunning = false;
+    function updateClickUI() {
+      timerEl.innerText = `${clickTimeLeft.toFixed(1)}s`;
+      playerScoreEl.innerText = `${playerClicks} 次`;
+      aiScoreEl.innerText = `${aiClicks} 次`;
+
+      const elapsed = clickDuration - clickTimeLeft;
+      playerCpsEl.innerText = elapsed > 0 ? (playerClicks / elapsed).toFixed(1) : '0.0';
+      aiCpsEl.innerText = elapsed > 0 ? (aiClicks / elapsed).toFixed(1) : '0.0';
+
+      const maxScore = Math.max(playerClicks, aiClicks, 20);
+      playerBar.style.width = `${Math.min((playerClicks / maxScore) * 100, 100)}%`;
+      aiBar.style.width = `${Math.min((aiClicks / maxScore) * 100, 100)}%`;
+    }
+
+    function endClickGame() {
+      isClicking = false;
+      clearInterval(clickTimer);
+      clickArea.disabled = true;
+      startBtn.disabled = false;
+      startBtn.classList.remove('opacity-50');
+      clickBtnText.innerText = '比賽結束！';
+
+      const diff = playerClicks - aiClicks;
+      document.getElementById('final-player').innerText = `${playerClicks} 次`;
+      document.getElementById('final-ai').innerText = `${aiClicks} 次`;
+
+      if (diff > 0) {
+        document.getElementById('result-emoji').innerText = '👑';
+        document.getElementById('result-title').innerText = '你大獲全勝！';
+        document.getElementById('final-diff').innerText = `贏了 ${diff} 下！`;
+      } else if (diff < 0) {
+        document.getElementById('result-emoji').innerText = '🤖';
+        document.getElementById('result-title').innerText = '電腦獲勝了！';
+        document.getElementById('final-diff').innerText = `輸了 ${Math.abs(diff)} 下`;
+      } else {
+        document.getElementById('result-emoji').innerText = '🤝';
+        document.getElementById('result-title').innerText = '勢均力敵！';
+        document.getElementById('final-diff').innerText = '平手';
+      }
+
+      clickModal.classList.remove('hidden');
+    }
+
+    function switchToBoxing() {
+      clickModal.classList.add('hidden');
+      document.getElementById('game1-container').classList.add('hidden');
+      document.getElementById('game2-container').classList.remove('hidden');
+      initBoxingCanvas();
+    }
+
+    function backToClickGame() {
+      document.getElementById('box-modal').classList.add('hidden');
+      document.getElementById('game2-container').classList.add('hidden');
+      document.getElementById('game1-container').classList.remove('hidden');
+    }
+
+
+    /* ================= 遊戲 2：火柴人拳擊邏輯 ================= */
+    let canvas, ctx;
+    let boxTimer = null;
+    let boxTimeLeft = 10;
+    let boxPlaying = false;
+    let pPunchCount = 0;
+    let aiPunchCount = 0;
+    
+    // 火柴人狀態
+    let playerStick = { x: 0, y: 0, punch: 0, hit: 0, fallen: false };
+    let aiStick = { x: 0, y: 0, punch: 0, hit: 0, fallen: false };
+
+    function initBoxingCanvas() {
+      canvas = document.getElementById('boxingCanvas');
+      ctx = canvas.getContext('2d');
+      resizeCanvas();
+      drawStickmen();
+    }
+
+    function resizeCanvas() {
+      const wrap = document.getElementById('boxing-canvas-wrap');
+      if (!wrap || !canvas) return;
+      canvas.width = wrap.clientWidth;
+      canvas.height = wrap.clientHeight;
+      playerStick.x = canvas.width * 0.3;
+      playerStick.y = canvas.height * 0.75;
+      aiStick.x = canvas.width * 0.7;
+      aiStick.y = canvas.height * 0.75;
+    }
+
+    window.addEventListener('resize', () => {
+      if (!document.getElementById('game2-container').classList.contains('hidden')) {
+        resizeCanvas();
+        drawStickmen();
+      }
+    });
+
+    // 拳擊比賽開局 (含 3 秒倒數)
+    function prepareBoxingGame() {
+      document.getElementById('box-modal').classList.add('hidden');
+      pPunchCount = 0;
+      aiPunchCount = 0;
+      boxTimeLeft = 10.0;
+      boxPlaying = false;
+
+      playerStick.fallen = false;
+      aiStick.fallen = false;
+
+      document.getElementById('box-p-score').innerText = '0 拳';
+      document.getElementById('box-ai-score').innerText = '0 拳';
+      document.getElementById('box-timer').innerText = '10.0s';
+      
+      const startBoxBtn = document.getElementById('box-start-btn');
+      startBoxBtn.disabled = true;
+      startBoxBtn.classList.add('opacity-50');
+
+      drawStickmen();
+
+      // 3 秒倒數 overlay
+      const cdOverlay = document.getElementById('boxing-countdown-overlay');
+      const cdText = document.getElementById('boxing-countdown-text');
+      cdOverlay.classList.remove('hidden');
+      
+      let cdCount = 3;
+      cdText.innerText = cdCount;
+
+      const prepareTimer = setInterval(() => {
+        cdCount--;
+        if (cdCount > 0) {
+          cdText.innerText = cdCount;
+        } else if (cdCount === 0) {
+          cdText.innerText = "FIGHT!";
+        } else {
+          clearInterval(prepareTimer);
+          cdOverlay.classList.add('hidden');
+          startBoxingGame();
+        }
+      }, 900);
+    }
+
+    function startBoxingGame() {
+      boxPlaying = true;
+
+      if (boxTimer) clearInterval(boxTimer);
+      boxTimer = setInterval(() => {
+        boxTimeLeft -= 0.1;
         
-        let timerInterval = null;
-        let aiInterval = null;
-        let cpsCalculatorInterval = null;
-
-        let playerRecentClicks = [];
-        let aiRecentClicks = [];
-
-        // 夢幻符號庫
-        const dreamSymbols = ['💖', '✨', '🌸', '⭐', '🦄', '🎀', '💫', '💎'];
-
-        // --- DOM 元素引用 ---
-        const clickBtn = document.getElementById('clickBtn');
-        const startBtn = document.getElementById('startBtn');
-        const btnText = document.getElementById('btnText');
-        const comboText = document.getElementById('comboText');
-        const timerDisplay = document.getElementById('timerDisplay');
-        const diffDisplay = document.getElementById('diffDisplay');
-
-        const playerScoreEl = document.getElementById('playerScore');
-        const aiScoreEl = document.getElementById('aiScore');
-        const playerBar = document.getElementById('playerBar');
-        const aiBar = document.getElementById('aiBar');
-        const playerCpsEl = document.getElementById('playerCps');
-        const aiCpsEl = document.getElementById('aiCps');
-
-        const countdownModal = document.getElementById('countdownModal');
-        const countdownNum = document.getElementById('countdownNum');
-
-        const resultModal = document.getElementById('resultModal');
-        const resultBadge = document.getElementById('resultBadge');
-        const resultTitle = document.getElementById('resultTitle');
-        const resultSubtitle = document.getElementById('resultSubtitle');
-        const resPlayerClicks = document.getElementById('resPlayerClicks');
-        const resAiClicks = document.getElementById('resAiClicks');
-        const resPlayerAvgCps = document.getElementById('resPlayerAvgCps');
-        const resDiffText = document.getElementById('resDiffText');
-
-        // 生成背景裝飾星光
-        function initStarBg() {
-            const container = document.getElementById('starContainer');
-            for (let i = 0; i < 25; i++) {
-                const star = document.createElement('div');
-                star.className = 'star-bg text-pink-200/30';
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.top = `${Math.random() * 100}%`;
-                star.style.fontSize = `${Math.random() * 1.2 + 0.6}rem`;
-                star.style.animationDelay = `${Math.random() * 5}s`;
-                star.style.animationDuration = `${Math.random() * 4 + 4}s`;
-                star.innerText = Math.random() > 0.5 ? '✦' : '✧';
-                container.appendChild(star);
-            }
+        // 機器人調整為 1 秒 6 下 (6 CPS)
+        // 0.1 秒的間隔內有 60% 機率出拳 (0.6 * 10 = 6 次/秒)
+        if (Math.random() < 0.60) {
+          aiPunch();
         }
 
-        // --- 玩家點擊觸發 ---
-        clickBtn.addEventListener('pointerdown', (e) => {
-            if (!isGameRunning) return;
-            
-            playerClicks++;
-            playerRecentClicks.push(Date.now());
-
-            triggerBtnAnimation();
-            spawnDreamParticle(e.clientX, e.clientY);
-            updateDisplay();
-        });
-
-        // 按鈕點擊動畫
-        function triggerBtnAnimation() {
-            clickBtn.classList.remove('dream-clicking');
-            void clickBtn.offsetWidth;
-            clickBtn.classList.add('dream-clicking');
+        if (boxTimeLeft <= 0) {
+          boxTimeLeft = 0;
+          endBoxingGame();
         }
 
-        // 產生夢幻粒子爆發特效
-        function spawnDreamParticle(x, y) {
-            // 若無座標則定位在按鈕中央
-            if (!x || !y) {
-                const rect = clickBtn.getBoundingClientRect();
-                x = rect.left + rect.width / 2;
-                y = rect.top + rect.height / 2;
-            }
+        document.getElementById('box-timer').innerText = `${boxTimeLeft.toFixed(1)}s`;
+        drawStickmen();
+      }, 100);
+    }
 
-            // 一次產生 2~3 個夢幻粒子
-            const count = Math.floor(Math.random() * 2) + 2;
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('div');
-                p.className = 'dream-particle';
-                p.innerText = dreamSymbols[Math.floor(Math.random() * dreamSymbols.length)];
-                
-                // 隨機角度與距離
-                const dx = (Math.random() - 0.5) * 120;
-                const rot = (Math.random() - 0.5) * 180;
+    function playerPunch() {
+      if (!boxPlaying) return;
+      pPunchCount++;
+      playerStick.punch = 1;
+      aiStick.hit = 1;
+      document.getElementById('box-p-score').innerText = `${pPunchCount} 拳`;
+      createHitEffect(aiStick.x - 20, aiStick.y - 80, 'POW!');
+      drawStickmen();
+      setTimeout(() => { playerStick.punch = 0; aiStick.hit = 0; drawStickmen(); }, 120);
+    }
 
-                p.style.setProperty('--dx', `${dx}px`);
-                p.style.setProperty('--rot', `${rot}deg`);
-                p.style.left = `${x}px`;
-                p.style.top = `${y}px`;
+    function aiPunch() {
+      if (!boxPlaying) return;
+      aiPunchCount++;
+      aiStick.punch = 1;
+      playerStick.hit = 1;
+      document.getElementById('box-ai-score').innerText = `${aiPunchCount} 拳`;
+      createHitEffect(playerStick.x + 20, playerStick.y - 80, 'HIT!');
+      drawStickmen();
+      setTimeout(() => { aiStick.punch = 0; playerStick.hit = 0; drawStickmen(); }, 120);
+    }
 
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 750);
-            }
-        }
+    // 鍵盤與點擊事件綁定
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && boxPlaying) {
+        e.preventDefault();
+        playerPunch();
+      }
+    });
 
-        // --- 倒數 3 秒開局 ---
-        function prepareStart() {
-            resetGameData();
-            startBtn.classList.add('hidden');
-            countdownModal.classList.remove('hidden');
+    document.getElementById('boxing-canvas-wrap')?.addEventListener('pointerdown', () => {
+      if (boxPlaying) playerPunch();
+    });
 
-            let count = 3;
-            countdownNum.innerText = count;
+    function createHitEffect(x, y, text) {
+      const wrap = document.getElementById('boxing-canvas-wrap');
+      const hit = document.createElement('div');
+      hit.className = 'hit-text text-yellow-300 drop-shadow-md';
+      hit.innerText = text;
+      hit.style.left = `${x}px`;
+      hit.style.top = `${y}px`;
+      wrap.appendChild(hit);
+      setTimeout(() => hit.remove(), 500);
+    }
 
-            const countTimer = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownNum.innerText = count;
-                    countdownNum.classList.remove('animate-ping');
-                    void countdownNum.offsetWidth;
-                    countdownNum.classList.add('animate-ping');
-                } else {
-                    clearInterval(countTimer);
-                    countdownModal.classList.add('hidden');
-                    startGame();
-                }
-            }, 1000);
-        }
+    function drawStickmen() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // --- 開始比賽 ---
-        function startGame() {
-            isGameRunning = true;
-            clickBtn.disabled = false;
-            btnText.innerText = "全力連點！";
-            comboText.classList.remove('opacity-0');
+      // 繪製地面
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height * 0.78);
+      ctx.lineTo(canvas.width, canvas.height * 0.78);
+      ctx.stroke();
 
-            const startTime = Date.now();
+      // 繪製玩家火柴人 (藍色團隊)
+      drawSingleStickman(playerStick.x, playerStick.y, true, playerStick.punch, playerStick.hit, playerStick.fallen);
+      
+      // 繪製 AI 火柴人 (紅色團隊)
+      drawSingleStickman(aiStick.x, aiStick.y, false, aiStick.punch, aiStick.hit, aiStick.fallen);
+    }
 
-            // 主計時器
-            timerInterval = setInterval(() => {
-                const elapsed = (Date.now() - startTime) / 1000;
-                timeLeft = Math.max(0, GAME_DURATION - elapsed);
-                timerDisplay.innerText = `${timeLeft.toFixed(1)}s`;
+    function drawSingleStickman(x, y, isPlayer, isPunching, isHit, isFallen) {
+      ctx.save();
+      ctx.translate(x, y);
 
-                if (timeLeft <= 0) {
-                    endGame();
-                }
-            }, 100);
+      // 被倒地 KO 動畫
+      if (isFallen) {
+        ctx.rotate(isPlayer ? -Math.PI / 2 : Math.PI / 2);
+        ctx.translate(0, 20);
+      } else if (isHit) {
+        ctx.translate(isPlayer ? -10 : 10, 0);
+      }
 
-            // AI 自動點擊 (平均 ~5 CPS，隨機波動 ±35ms)
-            function scheduleAiClick() {
-                if (!isGameRunning) return;
-                const delay = 200 + (Math.random() * 70 - 35);
-                
-                aiInterval = setTimeout(() => {
-                    if (isGameRunning) {
-                        aiClicks++;
-                        aiRecentClicks.push(Date.now());
-                        updateDisplay();
-                        scheduleAiClick();
-                    }
-                }, delay);
-            }
-            scheduleAiClick();
+      const bodyColor = '#ffffff';
+      const gloveColor = isPlayer ? '#38bdf8' : '#f43f5e';
 
-            // 即時 CPS 計算 (過去1秒)
-            cpsCalculatorInterval = setInterval(() => {
-                const now = Date.now();
-                playerRecentClicks = playerRecentClicks.filter(t => now - t <= 1000);
-                aiRecentClicks = aiRecentClicks.filter(t => now - t <= 1000);
+      // 頭部
+      ctx.strokeStyle = bodyColor;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(0, -70, 16, 0, Math.PI * 2);
+      ctx.stroke();
 
-                playerCpsEl.innerText = playerRecentClicks.length.toFixed(1);
-                aiCpsEl.innerText = aiRecentClicks.length.toFixed(1);
-            }, 200);
-        }
+      // 頭帶
+      ctx.strokeStyle = gloveColor;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(0, -72, 17, Math.PI * 0.8, Math.PI * 0.2);
+      ctx.stroke();
 
-        // --- 更新介面數值與進度條 ---
-        function updateDisplay() {
-            playerScoreEl.innerText = playerClicks;
-            aiScoreEl.innerText = aiClicks;
+      // 身體
+      ctx.strokeStyle = bodyColor;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(0, -54);
+      ctx.lineTo(0, -10);
+      ctx.stroke();
 
-            const diff = playerClicks - aiClicks;
-            if (diff > 0) {
-                diffDisplay.innerText = `+${diff} 下`;
-                diffDisplay.className = "text-xl md:text-2xl font-black text-pink-300 drop-shadow";
-            } else if (diff < 0) {
-                diffDisplay.innerText = `${diff} 下`;
-                diffDisplay.className = "text-xl md:text-2xl font-black text-cyan-300 drop-shadow";
-            } else {
-                diffDisplay.innerText = `0 下`;
-                diffDisplay.className = "text-xl md:text-2xl font-black text-purple-200/80";
-            }
+      // 雙腿
+      ctx.beginPath();
+      ctx.moveTo(0, -10);
+      ctx.lineTo(-15, 15);
+      ctx.moveTo(0, -10);
+      ctx.lineTo(15, 15);
+      ctx.stroke();
 
-            const maxVal = Math.max(playerClicks, aiClicks, 25);
-            playerBar.style.width = `${Math.min(100, (playerClicks / maxVal) * 100)}%`;
-            aiBar.style.width = `${Math.min(100, (aiClicks / maxVal) * 100)}%`;
-        }
+      // 手臂與拳擊手套
+      ctx.beginPath();
+      if (isPunching) {
+        // 出拳手臂伸長
+        const punchX = isPlayer ? 45 : -45;
+        ctx.moveTo(0, -40);
+        ctx.lineTo(punchX, -40);
+        ctx.stroke();
 
-        // 重置數據
-        function resetGameData() {
-            playerClicks = 0;
-            aiClicks = 0;
-            timeLeft = GAME_DURATION;
-            playerRecentClicks = [];
-            aiRecentClicks = [];
+        // 拳擊手套
+        ctx.fillStyle = gloveColor;
+        ctx.beginPath();
+        ctx.arc(punchX + (isPlayer ? 8 : -8), -40, 10, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // 防守姿態
+        ctx.moveTo(0, -40);
+        ctx.lineTo(isPlayer ? 15 : -15, -35);
+        ctx.stroke();
 
-            timerDisplay.innerText = `${GAME_DURATION.toFixed(1)}s`;
-            playerCpsEl.innerText = "0.0";
-            aiCpsEl.innerText = "0.0";
-            btnText.innerText = "準備好連點";
-            comboText.classList.add('opacity-0');
+        ctx.fillStyle = gloveColor;
+        ctx.beginPath();
+        ctx.arc(isPlayer ? 15 : -15, -35, 9, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
-            updateDisplay();
-        }
+      ctx.restore();
+    }
 
-        // 結束遊戲與顯示結算面板
-        function endGame() {
-            isGameRunning = false;
-            clickBtn.disabled = true;
-            btnText.innerText = "時間到！";
-            comboText.classList.add('opacity-0');
+    function endBoxingGame() {
+      boxPlaying = false;
+      clearInterval(boxTimer);
+      document.getElementById('box-start-btn').disabled = false;
+      document.getElementById('box-start-btn').classList.remove('opacity-50');
 
-            clearInterval(timerInterval);
-            clearTimeout(aiInterval);
-            clearInterval(cpsCalculatorInterval);
+      const banner = document.getElementById('box-banner');
+      const subText = document.getElementById('box-sub-text');
 
-            const diff = playerClicks - aiClicks;
-            const playerAvgCps = (playerClicks / GAME_DURATION).toFixed(1);
+      if (pPunchCount > aiPunchCount) {
+        aiStick.fallen = true;
+        playerStick.punch = 1;
+        banner.innerText = "VICTORY";
+        banner.className = "text-5xl font-black my-4 text-amber-300 drop-shadow-lg";
+        subText.innerText = "一拳重擊將 AI 打倒在地！";
+      } else if (aiPunchCount > pPunchCount) {
+        playerStick.fallen = true;
+        aiStick.punch = 1;
+        banner.innerText = "YOU LOST";
+        banner.className = "text-5xl font-black my-4 text-rose-400 drop-shadow-lg";
+        subText.innerText = "可惜！被 6 CPS 機器人一拳 KO！";
+      } else {
+        banner.innerText = "DRAW";
+        banner.className = "text-5xl font-black my-4 text-cyan-300 drop-shadow-lg";
+        subText.innerText = "兩人同時重擊，不分勝負！";
+      }
 
-            resPlayerClicks.innerText = `${playerClicks} 次`;
-            resAiClicks.innerText = `${aiClicks} 次`;
-            resPlayerAvgCps.innerText = `${playerAvgCps} 次/秒`;
+      drawStickmen();
 
-            if (diff > 0) {
-                resultBadge.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-4 bg-pink-500/20 text-pink-300 border border-pink-300/50 shadow-lg glow-pink";
-                resultBadge.innerHTML = '<i class="fa-solid fa-crown"></i>';
-                resultTitle.innerText = "💖 夢幻大獲全勝！";
-                resultSubtitle.innerText = "太厲害了！你的手速成功戰勝了電腦！";
-                resDiffText.className = "font-black text-xl text-pink-300";
-                resDiffText.innerText = `大幅領先 ${diff} 次點擊！`;
-            } else if (diff < 0) {
-                resultBadge.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-4 bg-cyan-500/20 text-cyan-300 border border-cyan-300/50 shadow-lg glow-cyan";
-                resultBadge.innerHTML = '<i class="fa-solid fa-robot"></i>';
-                resultTitle.innerText = "✨ 差一點就贏了！";
-                resultSubtitle.innerText = "電腦 AI 的速度稍微快了一點點！";
-                resDiffText.className = "font-black text-xl text-cyan-300";
-                resDiffText.innerText = `落後 AI ${Math.abs(diff)} 次點擊`;
-            } else {
-                resultBadge.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-4 bg-purple-500/20 text-purple-300 border border-purple-300/50 shadow-lg";
-                resultBadge.innerHTML = '<i class="fa-solid fa-sparkles"></i>';
-                resultTitle.innerText = "🌸 默契平手！";
-                resultSubtitle.innerText = "你與 AI 的連點速度完美一致！";
-                resDiffText.className = "font-black text-xl text-purple-200";
-                resDiffText.innerText = "雙方平分秋色";
-            }
-
-            setTimeout(() => {
-                resultModal.classList.remove('hidden');
-            }, 300);
-        }
-
-        // 關閉結算彈窗並重置
-        function closeResultAndRestart() {
-            resultModal.classList.add('hidden');
-            startBtn.classList.remove('hidden');
-            resetGameData();
-        }
-
-        // 初始化星光背景
-        window.onload = initStarBg;
-    </script>
+      setTimeout(() => {
+        document.getElementById('box-modal').classList.remove('hidden');
+      }, 700);
+    }
+  </script>
 </body>
 </html>
